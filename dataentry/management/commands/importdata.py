@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.apps import apps
 import csv
 from django.db import DataError
+from dataentry.utils import check_csv_errors
 
 class Command(BaseCommand):
     help ='Import data from csv file'
@@ -16,31 +17,10 @@ class Command(BaseCommand):
         model_name=kwargs['model_name'].capitalize()
         #print(file_path)
 
-        model = None
-        for app_config in apps.get_app_configs():
-            #Try to search for the model inside the app
-            try:
-                model=apps.get_model(app_config.label,model_name)
-                break # searching stoped once the model is found
-            except LookupError:
-                continue # model not found in this app, continue searching in next app
-
-        if not model:
-            raise CommandError(f'Model "{model_name}" not found in any app!')
+        model = check_csv_errors(file_path, model_name)
         
-        
-        #get all the field names of the model
-        model_fields = [field.name for field in model._meta.fields if field.name !='id']
-        print(model_fields)
-        
-        with open(file_path, 'r') as file:
-            reader = csv.DictReader(file)
-            csv_header = reader.fieldnames
-
-            #compare csv header with model field name
-            if csv_header !=model_fields:
-                raise DataError(f'CSV file doen t match with the {model_name} table fields')
-
+        with open(file_path,'r')as file:
+            reader =csv.DictReader(file)
             for row in reader:
                 #print(row)
                 #Student.objects.create(**row)
