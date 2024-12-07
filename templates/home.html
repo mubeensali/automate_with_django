@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="container" style="padding: 50px;">
+    {% if user.is_authenticated %}
     <h2 class="text-center">Automate The Boring Stuff With Django</h2>
     <div class="row pt-5">
         <!-- Import data -->
@@ -89,5 +90,18 @@
             </a>
         </div>
     </div>
+    {% else %}
+
+    <div class="home-info">
+        <h2 class="text-center">Automate with Django</h2>
+        <p class="lead text-center text-muted">
+            "Automate Django project is to buid tool using Django framework to automate the task for data processing to scheduling."
+        </p>
+        <div style="display: flex; justify-content: center;">
+            <a href="{% url 'login' %}" class="btn btn-primary">LOGIN</a>
+            &nbsp;<a href="{% url 'register' %}" class="btn btn-success">REGISTER</a>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
